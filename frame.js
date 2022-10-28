@@ -1,5 +1,6 @@
 async function load50frame() {
     const canvas = document.getElementById("canvas");
+    const fba = document.getElementById("fb-area");
     const ctx = canvas.getContext("2d");
     const r = await fetch('0.1.640029.h264');
     const blob = await (await r.blob()).arrayBuffer();
@@ -27,6 +28,7 @@ async function load50frame() {
         decoder = new VideoDecoder(init);
         decoder.configure(config);
     } else {
+        fba.innerHTML = "CONFIG NOT SUPPORTED";
         throw new Error("CONFIG NOT SUPPORTED", config);
     }
 
@@ -38,12 +40,16 @@ async function load50frame() {
     });
 
     decoder.decode(chunk);
+    setTimeout(() => {
+        fba.innerHTML = `DECODER STATUS: ${decoder.state}; DECODER QUEUE SIZE: ${decoder.decodeQueueSize ?? 'N/A'}`;
+    }, 100);
 
 }
 
 async function load25frame() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
+    const fba = document.getElementById("fb-area");
     const r = await fetch('0.1.25Hz.640029.h264');
     const blob = await (await r.blob()).arrayBuffer();
     console.log("Received h.264 25Hz frame");
@@ -81,5 +87,9 @@ async function load25frame() {
     });
 
     decoder.decode(chunk);
+
+    setTimeout(() => {
+        fba.innerHTML = `DECODER STATUS: ${decoder.state}; DECODER QUEUE SIZE: ${decoder.decodeQueueSize ?? 'N/A'}`;
+    }, 100);
 
 }
